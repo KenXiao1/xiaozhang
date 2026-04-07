@@ -52,7 +52,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
       const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1)
       const hasSpace = textAfterAt.includes(' ') || textAfterAt.includes('\n')
 
-      if (!hasSpace && cursorPos > lastAtIndex) {
+      if (!hasSpace && cursorPos >= lastAtIndex + 1) {
         // 正在 @ 后面输入，显示选择器并更新搜索词
         if (!showMentionPicker) {
           const textarea = textareaRef.current
