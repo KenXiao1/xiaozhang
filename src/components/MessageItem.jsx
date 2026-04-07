@@ -35,6 +35,10 @@ function applyHighlights(text, annotations, currentUser) {
   return parts
 }
 
+function Avatar({ name }) {
+  return <div class="avatar">{name?.[0]?.toUpperCase() || '?'}</div>
+}
+
 export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved }) {
   const [pending, setPending] = useState(null)
   const containerRef = useRef(null)
@@ -52,17 +56,22 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved }
 
   return (
     <div class={`msg-wrap ${isSelf ? 'self' : 'other'}`}>
-      <div
-        class={`msg-bubble ${msg.is_ai_generated ? 'ai-generated' : ''}`}
-        ref={containerRef}
-        onMouseUp={handleMouseUp}
-      >
-        {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
-        {highlights
-          ? <div class="msg-content">{highlights}</div>
-          : <div class="msg-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-        }
+      {!isSelf && <Avatar name={msg.sender} />}
+      <div class="msg-body">
+        <div class={`msg-sender ${isSelf ? 'self' : ''}`}>{msg.sender}</div>
+        <div
+          class={`msg-bubble ${msg.is_ai_generated ? 'ai-generated' : ''}`}
+          ref={containerRef}
+          onMouseUp={handleMouseUp}
+        >
+          {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
+          {highlights
+            ? <div class="msg-content">{highlights}</div>
+            : <div class="msg-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          }
+        </div>
       </div>
+      {isSelf && <Avatar name={msg.sender} />}
       {pending && (
         <Annotation
           rect={pending.rect}
