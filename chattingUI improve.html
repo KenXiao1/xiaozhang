@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat UI Improvement</title>
+<style>
+    /* 引入现代字体 */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+        /* 定义高级感色彩变量 */
+        --brand-primary: #D36B46; /* 更内敛的高级橘色 */
+        --brand-primary-hover: #B85835;
+        --bg-glass: rgba(255, 255, 255, 0.65); /* 毛玻璃背景 */
+        --bg-glass-darker: rgba(255, 255, 255, 0.85);
+        --text-main: #2C2C2C; /* 不用纯黑，用深灰增加质感 */
+        --text-muted: #8E8E93;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+        --radius-lg: 16px;
+        --radius-pill: 100px;
+    }
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+        color: var(--text-main);
+        background-color: #F5EFEB; /* 模拟你原本的底色 */
+        /* 下面这行只是为了在预览中模拟你的光影效果，实际使用时去掉，用你原本的背景 */
+        background-image: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.8) 0%, transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.02) 100%);
+    }
+
+    /* 容器：保持背景可见 */
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        max-width: 1400px;
+        margin: 0 auto;
+        background: transparent; 
+    }
+
+    /* --- 顶部导航栏 --- */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        backdrop-filter: blur(12px); /* 毛玻璃效果 */
+        -webkit-backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.3);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .header-left { font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px;}
+    
+    .header-right { display: flex; gap: 10px; }
+    .btn-header {
+        padding: 6px 16px;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(0,0,0,0.05);
+        background: var(--bg-glass-darker);
+        color: var(--text-main);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(4px);
+    }
+    .btn-header:hover { background: #fff; box-shadow: var(--shadow-sm); }
+    .btn-header.primary { background: var(--brand-primary); color: white; border: none; }
+    .btn-header.primary:hover { background: var(--brand-primary-hover); }
+
+    /* --- 聊天区域 --- */
+    .chat-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .message-row { display: flex; gap: 12px; align-items: flex-end; }
+    .message-row.right { flex-direction: row-reverse; }
+
+    /* 头像 */
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+    }
+    .avatar.cheny { background: linear-gradient(135deg, #E6A984, #D36B46); }
+    .avatar.xiao { background: linear-gradient(135deg, #4A4A4A, #2C2C2C); } /* 区分角色，给Xiao用了高级灰 */
+
+    /* 气泡组合 */
+    .message-content { display: flex; flex-direction: column; gap: 4px; max-width: 65%; }
+    .message-row.right .message-content { align-items: flex-end; }
+
+    .sender-name { font-size: 12px; color: var(--text-muted); margin: 0 4px; }
+
+    /* 消息气泡本体 */
+    .bubble {
+        padding: 14px 18px;
+        font-size: 15px;
+        line-height: 1.6;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        word-wrap: break-word;
+        position: relative;
+    }
+    
+    /* 左侧气泡：半透明毛玻璃白 */
+    .message-row.left .bubble {
+        background: var(--bg-glass-darker);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-bottom-left-radius: 4px; /* 聊天气泡的经典尖角 */
+    }
+
+    /* 右侧气泡：纯净柔和白 或 极浅的高级暖灰 */
+    .message-row.right .bubble {
+        background: #FFFFFF;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        border-bottom-right-radius: 4px;
+    }
+
+    /* --- 特殊内容格式化 --- */
+    .code-block {
+        background: #F4F4F5;
+        border: 1px solid #E4E4E7;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 13px;
+        margin: 4px 0;
+        color: #e83e8c;
+    }
+
+    .math-text { font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 16px; }
+
+    /* AI 生成标签 */
+    .ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #6366F1; /* 高级紫蓝色 */
+        background: rgba(99, 102, 241, 0.1);
+        padding: 4px 8px;
+        border-radius: 100px;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    /* 引用回复区块 */
+    .reply-block {
+        background: rgba(0,0,0,0.03);
+        border-left: 3px solid var(--brand-primary);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    /* --- 底部输入区域 --- */
+    .input-container {
+        padding: 24px;
+        background: linear-gradient(to top, rgba(245, 239, 235, 1) 40%, transparent 100%); /* 底部渐变融合背景 */
+    }
+
+    .input-box {
+        display: flex;
+        align-items: flex-end;
+        background: var(--bg-glass-darker);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: var(--shadow-md);
+        border-radius: 20px;
+        padding: 12px 16px;
+        gap: 12px;
+        max-width: 1000px;
+        margin: 0 auto;
+        transition: box-shadow 0.3s ease;
+    }
+    .input-box:focus-within {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        border-color: rgba(255,255,255,1);
+    }
+
+    .input-box textarea {
+        flex: 1;
+        border: none;
+        background: transparent;
+        resize: none;
+        outline: none;
+        padding: 8px 0;
+        font-size: 15px;
+        font-family: inherit;
+        color: var(--text-main);
+        line-height: 1.5;
+        max-height: 150px;
+    }
+    .input-box textarea::placeholder { color: #A1A1AA; }
+
+    .input-actions {
+        display: flex;
+        gap: 8px;
+        padding-bottom: 4px;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: #F4F4F5;
+        color: var(--text-main);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    .btn-icon:hover { background: #E4E4E7; }
+
+    .btn-send {
+        padding: 0 20px;
+        height: 36px;
+        border-radius: var(--radius-pill);
+        border: none;
+        background: var(--brand-primary);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-send:hover { background: var(--brand-primary-hover); }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            Cheny & Xiao
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+        </div>
+        <div class="header-right">
+            <button class="btn-header primary">流式</button>
+            <button class="btn-header">缩进</button>
+            <button class="btn-header">☀️</button>
+            <button class="btn-header">退出</button>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+        
+        <!-- Msg 1 (Left) -->
+        <div class="message-row left">
+            <div class="avatar cheny">C</div>
+            <div class="message-content">
+                <span class="sender-name">Cheny</span>
+                <div class="bubble">
+                    <div>test</div>
+                    <div class="math-text">/int</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Msg 2 (Left) -->
+        <div class="message-row left">
+            <div class="avatar cheny">C</div>
+            <div class="message-content">
+                <span class="sender-name">Cheny</span>
+                <div class="bubble">
+                    <h2>hi</h2>
+                    <div class="math-text" style="font-size: 24px;">∫</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Msg 3 (Right) -->
+        <div class="message-row right">
+            <div class="avatar xiao">X</div>
+            <div class="message-content">
+                <span class="sender-name">Xiao</span>
+                <div class="bubble">
+                    <div class="code-block">### hello ```python print("hello world")```</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Msg 4 (Right - AI Generated) -->
+        <div class="message-row right">
+            <div class="avatar xiao">X</div>
+            <div class="message-content">
+                <span class="sender-name">Xiao</span>
+                <div class="bubble">
+                    <div class="ai-badge">✨ AI 生成</div>
+                    <div style="font-style: italic;">hi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Msg 5 (Right) -->
+        <div class="message-row right">
+            <div class="avatar xiao">X</div>
+            <div class="message-content">
+                <span class="sender-name">Xiao</span>
+                <div class="bubble">嘻嘻</div>
+            </div>
+        </div>
+
+        <!-- Msg 6 (Right with Quote) -->
+        <div class="message-row right">
+            <div class="avatar xiao">X</div>
+            <div class="message-content">
+                <span class="sender-name">Xiao</span>
+                <div class="bubble">
+                    <div class="reply-block">
+                        <strong>Cheny</strong><br>
+                        ## hi $$ \int $$
+                    </div>
+                    /int 不是 \int
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-container">
+        <div class="input-box">
+            <textarea rows="1" placeholder="输入消息··· (Ctrl+Enter 发送)"></textarea>
+            <div class="input-actions">
+                <button class="btn-icon">＋</button>
+                <button class="btn-header">预览</button>
+                <button class="btn-send">发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
