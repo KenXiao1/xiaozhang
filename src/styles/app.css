@@ -138,6 +138,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', '
   background: rgba(219,122,42,0.28);
   border: 1px solid rgba(219,122,42,0.4);
   box-shadow: 0 2px 12px rgba(219,122,42,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  color: var(--dark);
 }
 
 /* AI 标注 */
