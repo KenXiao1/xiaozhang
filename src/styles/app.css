@@ -181,26 +181,52 @@ mark.highlight-other { background: rgba(124,106,247,0.3); border-radius: 2px; cu
 .msg-thread-header .msg-sender { font-size: 0.82rem; font-weight: 600; opacity: 0.7; }
 .msg-thread-body .msg-bubble { border-radius: 12px; border-bottom-left-radius: 4px; }
 
-/* 注释气泡 */
-.annotation-bubble {
-  background: rgba(255,253,250,0.88); backdrop-filter: blur(20px) saturate(180%);
+/* Google Doc 风格注释卡片 */
+.msg-with-ann {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+}
+.ann-card {
+  min-width: 200px; max-width: 240px;
+  background: rgba(255,253,250,0.92); backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 14px; padding: 0.75rem;
-  box-shadow: 0 8px 32px rgba(26,25,23,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
-  min-width: 220px;
+  border-radius: 12px; padding: 0.6rem 0.75rem;
+  box-shadow: 0 4px 20px rgba(26,25,23,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-size: 0.82rem; flex-shrink: 0;
 }
-.annotation-bubble textarea {
-  width: 100%; border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 8px; padding: 0.4rem; font-size: 0.875rem;
-  resize: none; background: transparent;
+.dark .ann-card {
+  background: rgba(30,40,62,0.88);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
 }
-.annotation-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
-.annotation-actions button {
-  padding: 0.25rem 0.75rem; border-radius: 8px; border: none;
-  cursor: pointer; font-size: 0.875rem;
+.ann-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.3rem;
 }
-.annotation-actions button:first-child { background: var(--dusk); color: #fff; }
-.annotation-actions button:last-child { background: rgba(0,0,0,0.08); }
+.ann-card-author { font-weight: 600; color: var(--dusk); font-size: 0.78rem; }
+.ann-card-close {
+  border: none; background: transparent; cursor: pointer;
+  font-size: 1rem; color: var(--dark); opacity: 0.4; padding: 0; line-height: 1;
+}
+.ann-card-close:hover { opacity: 0.8; }
+.ann-card-quote {
+  color: var(--dark); opacity: 0.55; font-style: italic;
+  border-left: 2px solid var(--dusk); padding-left: 0.4rem;
+  margin-bottom: 0.35rem; line-height: 1.4;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ann-card-note { color: var(--dark); line-height: 1.5; }
+.ann-card-input {
+  width: 100%; border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 7px; padding: 0.35rem 0.5rem; font-size: 0.82rem;
+  resize: none; background: rgba(255,255,255,0.5); color: var(--dark);
+  font-family: inherit; margin-bottom: 0.4rem;
+}
+.dark .ann-card-input { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+.ann-card-actions { display: flex; justify-content: flex-end; }
+.ann-card-save {
+  padding: 0.2rem 0.7rem; border-radius: 7px; border: none;
+  background: var(--dusk); color: #fff; cursor: pointer; font-size: 0.8rem;
+}
 
 /* 输入框 */
 .composer {
