@@ -112,9 +112,15 @@
 mark.highlight-self { background: rgba(219,122,42,0.35); border-radius: 2px; cursor: help; }
 mark.highlight-other { background: rgba(124,106,247,0.3); border-radius: 2px; cursor: help; }
 
-/* Thread 缩进 */
-.thread { display: flex; flex-direction: column; gap: 0.25rem; }
-.thread-reply { padding-left: 2rem; }
+/* Thread 缩进（Gmail 风格递归嵌套） */
+.thread-node { display: flex; flex-direction: column; }
+.thread-quoted {
+  border-left: 2px solid rgba(0,0,0,0.15);
+  margin-left: 0.75rem;
+  padding-left: 0.75rem;
+  opacity: 0.75;
+}
+.dark .thread-quoted { border-color: rgba(255,255,255,0.15); }
 
 /* 注释气泡 */
 .annotation-bubble {
