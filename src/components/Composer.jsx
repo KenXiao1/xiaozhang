@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase.js'
 
 const md = new MarkdownIt()
 
-export function Composer({ currentUser, replyTo }) {
+export function Composer({ currentUser, replyTo, onClearReply }) {
   const [text, setText] = useState('')
   const [isAI, setIsAI] = useState(false)
   const [preview, setPreview] = useState(false)
@@ -15,10 +15,11 @@ export function Composer({ currentUser, replyTo }) {
       sender: currentUser,
       content: text.trim(),
       is_ai_generated: isAI,
-      thread_id: replyTo || null
+      thread_id: replyTo?.id || null
     })
     setText('')
     setIsAI(false)
+    onClearReply?.()
   }
 
   function onKeyDown(e) {
@@ -27,6 +28,12 @@ export function Composer({ currentUser, replyTo }) {
 
   return (
     <div class="composer">
+      {replyTo && (
+        <div class="reply-bar">
+          <span>引用 <b>{replyTo.sender}</b>：{replyTo.content.slice(0, 40)}{replyTo.content.length > 40 ? '…' : ''}</span>
+          <button onClick={onClearReply}>✕</button>
+        </div>
+      )}
       {preview
         ? <div class="composer-preview msg-content" dangerouslySetInnerHTML={{ __html: md.render(text || ' ') }} />
         : <textarea

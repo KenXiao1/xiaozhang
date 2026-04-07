@@ -12,6 +12,7 @@ export function App() {
   const [annotations, setAnnotations] = useState({})
   const [mode, setMode] = useState(() => localStorage.getItem('viewMode') || 'stream')
   const [dark, setDark] = useState(false)
+  const [replyTo, setReplyTo] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -81,8 +82,9 @@ export function App() {
           annotations={annotations}
           mode={mode}
           onAnnotationSaved={loadAnnotations}
+          onReply={setReplyTo}
         />
-        <Composer currentUser={user.username} />
+        <Composer currentUser={user.username} replyTo={replyTo} onClearReply={() => setReplyTo(null)} />
       </div>
     </div>
   )
