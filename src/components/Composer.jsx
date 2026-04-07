@@ -11,6 +11,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
   const [preview, setPreview] = useState(false)
   const [showMentionPicker, setShowMentionPicker] = useState(false)
   const [mentionPickerPos, setMentionPickerPos] = useState({ top: 0, left: 0 })
+  const [mentionSearchQuery, setMentionSearchQuery] = useState('')
   const [crossSessionRefs, setCrossSessionRefs] = useState([])
   const textareaRef = useRef(null)
 
@@ -41,31 +42,56 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
     const value = e.target.value
     setText(value)
 
-    // 检测 @ 符号
+    // 检测 @ 符号和搜索词
     const cursorPos = e.target.selectionStart
     const textBeforeCursor = value.slice(0, cursorPos)
     const lastAtIndex = textBeforeCursor.lastIndexOf('@')
 
-    if (lastAtIndex !== -1 && cursorPos === lastAtIndex + 1) {
-      // 刚输入 @，显示选择器
-      const textarea = textareaRef.current
-      const rect = textarea.getBoundingClientRect()
-      setMentionPickerPos({
-        top: rect.top - 300,
-        left: rect.left
-      })
-      setShowMentionPicker(true)
+    // 检查是否在 @ 后面输入（@ 后面没有空格）
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1)
+      const hasSpace = textAfterAt.includes(' ') || textAfterAt.includes('\n')
+
+      if (!hasSpace && cursorPos > lastAtIndex) {
+        // 正在 @ 后面输入，显示选择器并更新搜索词
+        if (!showMentionPicker) {
+          const textarea = textareaRef.current
+          const rect = textarea.getBoundingClientRect()
+          // 修复位置计算：在输入框上方显示
+          setMentionPickerPos({
+            top: rect.top - 420, // 选择器高度约 400px + 间距
+            left: rect.left
+          })
+          setShowMentionPicker(true)
+        }
+        setMentionSearchQuery(textAfterAt)
+      } else if (hasSpace) {
+        // @ 后面有空格，关闭选择器
+        setShowMentionPicker(false)
+        setMentionSearchQuery('')
+      }
+    } else {
+      // 没有 @，关闭选择器
+      setShowMentionPicker(false)
+      setMentionSearchQuery('')
     }
   }
 
   function onMentionSelect(mention) {
-    // 替换最后一个 @ 为引用标记
+    // 找到最后一个 @ 的位置
     const lastAtIndex = text.lastIndexOf('@')
+    if (lastAtIndex === -1) return
+
+    // 找到 @ 后面的内容（搜索词）
     const beforeAt = text.slice(0, lastAtIndex)
-    const afterAt = text.slice(lastAtIndex + 1)
+    const afterAtWithSearch = text.slice(lastAtIndex + 1)
+
+    // 找到搜索词后面的内容（可能有空格或其他字符）
+    const spaceIndex = afterAtWithSearch.search(/[\s\n]/)
+    const afterSearch = spaceIndex !== -1 ? afterAtWithSearch.slice(spaceIndex) : ''
 
     const mentionText = `[@${mention.sessionName}:${mention.sender}]`
-    setText(beforeAt + mentionText + afterAt)
+    setText(beforeAt + mentionText + afterSearch)
 
     // 保存引用信息
     setCrossSessionRefs(prev => [...prev, {
@@ -77,12 +103,22 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
     }])
 
     setShowMentionPicker(false)
+    setMentionSearchQuery('')
+
+    // 聚焦回输入框
+    setTimeout(() => textareaRef.current?.focus(), 0)
   }
 
   function onKeyDown(e) {
+    // 如果选择器打开，不处理 Enter 和上下键（让 MentionPicker 处理）
+    if (showMentionPicker && ['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) {
+      return
+    }
+
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) send()
     if (e.key === 'Escape' && showMentionPicker) {
       setShowMentionPicker(false)
+      setMentionSearchQuery('')
       e.preventDefault()
     }
   }
@@ -93,8 +129,12 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
         <MentionPicker
           currentSession={currentSession}
           onSelect={onMentionSelect}
-          onClose={() => setShowMentionPicker(false)}
+          onClose={() => {
+            setShowMentionPicker(false)
+            setMentionSearchQuery('')
+          }}
           position={mentionPickerPos}
+          searchQuery={mentionSearchQuery}
         />
       )}
       {crossSessionRefs.length > 0 && (

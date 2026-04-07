@@ -603,13 +603,15 @@ mark.highlight-other { background: rgba(124,106,247,0.3); border-radius: 2px; cu
   border-bottom: 1px solid rgba(0,0,0,0.05);
   transition: background 0.2s;
 }
-.mention-picker-item:hover {
+.mention-picker-item:hover,
+.mention-picker-item.selected {
   background: rgba(0,0,0,0.04);
 }
 .dark .mention-picker-item {
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.dark .mention-picker-item:hover {
+.dark .mention-picker-item:hover,
+.dark .mention-picker-item.selected {
   background: rgba(255,255,255,0.06);
 }
 
