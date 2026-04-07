@@ -18,8 +18,14 @@ export default async function handler(req) {
     [process.env.USER_B_NAME]: process.env.USER_B_PASSWORD_HASH,
   }
 
+  // DEBUG - 部署后删除
+  console.log('ENV_A_NAME:', JSON.stringify(process.env.USER_A_NAME))
+  console.log('INPUT_USER:', JSON.stringify(username))
+  console.log('INPUT_HASH:', hash)
+  console.log('STORED_HASH:', users[username])
+
   if (!users[username] || users[username] !== hash) {
-    return new Response(JSON.stringify({ error: '用户名或密码错误' }), {
+    return new Response(JSON.stringify({ error: '用户名或密码错误', debug: { envA: process.env.USER_A_NAME, inputUser: username, inputHash: hash, storedHash: users[username] } }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
     })
