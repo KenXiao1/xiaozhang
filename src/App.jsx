@@ -20,6 +20,10 @@ export function App() {
   useEffect(() => {
     if (!user) return
     loadSessions()
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
 
     const channel = supabase
       .channel('sessions-and-messages')
