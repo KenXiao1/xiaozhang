@@ -128,6 +128,9 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
   const containerRef = useRef(null)
   const isSelf = msg.sender === currentUser
 
+  // 解析跨 session 引用
+  const crossRefs = msg.cross_session_refs ? JSON.parse(msg.cross_session_refs) : []
+
   useEffect(() => {
     if (!menu) return
     function close() { setMenu(null) }
@@ -181,6 +184,17 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
       onClick={handleBubbleClick}
     >
       {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
+      {crossRefs.length > 0 && (
+        <div class="cross-refs-preview">
+          {crossRefs.map((ref, idx) => (
+            <div key={idx} class="cross-ref-item">
+              <span class="cross-ref-session">📎 {ref.sessionName}</span>
+              <span class="cross-ref-sender">{ref.sender}:</span>
+              <span class="cross-ref-content">{ref.content.slice(0, 50)}{ref.content.length > 50 ? '…' : ''}</span>
+            </div>
+          ))}
+        </div>
+      )}
       {quotedMsg && (
         <div class="quote-preview">
           <span class="quote-sender">{quotedMsg.sender}</span>

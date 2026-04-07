@@ -14,6 +14,7 @@ create table messages (
   content text not null,
   is_ai_generated boolean default false,
   thread_id uuid references messages(id),
+  cross_session_refs jsonb,
   created_at timestamptz default now()
 );
 
