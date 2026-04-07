@@ -16,6 +16,7 @@ export function App() {
   const [mode, setMode] = useState(() => localStorage.getItem('viewMode') || 'stream')
   const [dark, setDark] = useState(false)
   const [replyTo, setReplyTo] = useState(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -152,6 +153,8 @@ export function App() {
           currentUser={user.username}
           onSelectSession={selectSession}
           onCreateSession={createSession}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(v => !v)}
         />
         <div class="chat-main">
           <header class="chat-header">

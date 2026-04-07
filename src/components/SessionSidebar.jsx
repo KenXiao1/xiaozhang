@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import { supabase } from '../lib/supabase.js'
 
-export function SessionSidebar({ sessions, currentSession, currentUser, onSelectSession, onCreateSession }) {
+export function SessionSidebar({ sessions, currentSession, currentUser, onSelectSession, onCreateSession, collapsed, onToggleCollapse }) {
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
 
@@ -25,11 +25,24 @@ export function SessionSidebar({ sessions, currentSession, currentUser, onSelect
     setEditName('')
   }
 
+  if (collapsed) {
+    return (
+      <div class="session-sidebar collapsed">
+        <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="展开侧边栏">
+          ›
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div class="session-sidebar">
       <div class="sidebar-header">
         <h3>对话列表</h3>
-        <button class="new-session-btn" onClick={onCreateSession} title="新建对话">+</button>
+        <div class="sidebar-header-actions">
+          <button class="new-session-btn" onClick={onCreateSession} title="新建对话">+</button>
+          <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="收起侧边栏">‹</button>
+        </div>
       </div>
       <div class="session-list">
         {sessions.map(session => (
@@ -50,8 +63,10 @@ export function SessionSidebar({ sessions, currentSession, currentUser, onSelect
                   }}
                   autoFocus
                 />
-                <button onClick={() => saveEdit(session.id)}>✓</button>
-                <button onClick={cancelEdit}>✕</button>
+                <div class="session-edit-actions">
+                  <button onClick={() => saveEdit(session.id)}>✓</button>
+                  <button onClick={cancelEdit}>✕</button>
+                </div>
               </div>
             ) : (
               <div class="session-info">
