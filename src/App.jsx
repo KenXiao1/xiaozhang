@@ -88,7 +88,24 @@ export function App() {
   }
 
   async function loadAnnotations() {
-    const { data } = await supabase.from('annotations').select('*')
+    if (!currentSession) return
+    // 只加载当前 session 的消息的注释
+    const { data: sessionMessages } = await supabase
+      .from('messages')
+      .select('id')
+      .eq('session_id', currentSession.id)
+
+    const messageIds = (sessionMessages || []).map(m => m.id)
+    if (messageIds.length === 0) {
+      setAnnotations({})
+      return
+    }
+
+    const { data } = await supabase
+      .from('annotations')
+      .select('*')
+      .in('message_id', messageIds)
+
     const map = {}
     for (const a of data || []) {
       if (!map[a.message_id]) map[a.message_id] = []
@@ -110,6 +127,7 @@ export function App() {
 
   function selectSession(session) {
     setCurrentSession(session)
+    setMessages([]) // 立即清空消息，避免显示旧 session 的消息
     setReplyTo(null)
   }
 
