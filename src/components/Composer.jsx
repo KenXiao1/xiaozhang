@@ -99,7 +99,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
       )}
       {crossSessionRefs.length > 0 && (
         <div class="cross-refs-bar">
-          <span>跨对话引用：</span>
+          <span>Cross-session refs:</span>
           {crossSessionRefs.map((ref, idx) => (
             <span key={idx} class="cross-ref-tag">
               {ref.sessionName}:{ref.sender}
@@ -110,7 +110,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
       )}
       {replyTo && (
         <div class="reply-bar">
-          <span>引用 <b>{replyTo.sender}</b>：{replyTo.content.slice(0, 40)}{replyTo.content.length > 40 ? '…' : ''}</span>
+          <span>Reply to <b>{replyTo.sender}</b>: {replyTo.content.slice(0, 40)}{replyTo.content.length > 40 ? '…' : ''}</span>
           <button onClick={onClearReply}>✕</button>
         </div>
       )}
@@ -121,7 +121,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
             value={text}
             onInput={onInput}
             onKeyDown={onKeyDown}
-            placeholder="输入消息… (输入 @ 引用其他对话，Ctrl+Enter 发送)"
+            placeholder="Type a message... (Type @ to mention other sessions, Ctrl+Enter to send)"
             rows={3}
           />
       }
@@ -129,10 +129,10 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
         <button
           class={`ai-toggle ${isAI ? 'active' : ''}`}
           onClick={() => setIsAI(v => !v)}
-          title="标记为 AI 生成"
+          title="Mark as AI-generated"
         >✦</button>
-        <button class={preview ? 'active' : ''} onClick={() => setPreview(v => !v)}>预览</button>
-        <button onClick={send}>发送</button>
+        <button class={preview ? 'active' : ''} onClick={() => setPreview(v => !v)}>Preview</button>
+        <button onClick={send}>Send</button>
       </div>
     </div>
   )

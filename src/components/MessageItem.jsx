@@ -108,14 +108,14 @@ function NewAnnotationCard({ selection, messageId, annotator, onDone }) {
       <div class="ann-card-quote">"{selection.text}"</div>
       <textarea
         class="ann-card-input"
-        placeholder="添加注释…"
+        placeholder="Add annotation..."
         value={note}
         onInput={e => setNote(e.target.value)}
         rows={2}
         autoFocus
       />
       <div class="ann-card-actions">
-        <button class="ann-card-save" onClick={save}>保存</button>
+        <button class="ann-card-save" onClick={save}>Save</button>
       </div>
     </div>
   )
@@ -183,7 +183,7 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
       onContextMenu={handleContextMenu}
       onClick={handleBubbleClick}
     >
-      {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
+      {msg.is_ai_generated && <div class="ai-label">✦ AI Generated</div>}
       {crossRefs.length > 0 && (
         <div class="cross-refs-preview">
           {crossRefs.map((ref, idx) => (
@@ -207,8 +207,8 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
 
   const ctxMenu = menu && (
     <div class="ctx-menu" style={{ left: menu.x, top: menu.y }}>
-      <button onClick={handleCopy}>复制</button>
-      <button onClick={handleReply}>引用</button>
+      <button onClick={handleCopy}>Copy</button>
+      <button onClick={handleReply}>Reply</button>
     </div>
   )
 

@@ -73,11 +73,11 @@ export function MentionPicker({ currentSession, onSelect, onClose, position }) {
       {step === 'sessions' ? (
         <>
           <div class="mention-picker-header">
-            <span>选择对话</span>
+            <span>Select Session</span>
           </div>
           <div class="mention-picker-list">
             {sessions.length === 0 ? (
-              <div class="mention-picker-empty">没有其他对话</div>
+              <div class="mention-picker-empty">No other sessions</div>
             ) : (
               sessions.map(session => (
                 <div
@@ -100,7 +100,7 @@ export function MentionPicker({ currentSession, onSelect, onClose, position }) {
           </div>
           <div class="mention-picker-list">
             {messages.length === 0 ? (
-              <div class="mention-picker-empty">该对话暂无消息</div>
+              <div class="mention-picker-empty">No messages in this session</div>
             ) : (
               messages.map(msg => (
                 <div

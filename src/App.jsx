@@ -167,10 +167,10 @@ export function App() {
               </a>
             </div>
             <div class="header-actions">
-              <button class={mode === 'stream' ? 'active' : ''} onClick={() => toggleMode('stream')}>流式</button>
-              <button class={mode === 'thread' ? 'active' : ''} onClick={() => toggleMode('thread')}>缩进</button>
+              <button class={mode === 'stream' ? 'active' : ''} onClick={() => toggleMode('stream')}>Stream</button>
+              <button class={mode === 'thread' ? 'active' : ''} onClick={() => toggleMode('thread')}>Thread</button>
               <button onClick={toggleDark}>☀</button>
-              <button onClick={() => { clearToken(); setUser(null) }}>退出</button>
+              <button onClick={() => { clearToken(); setUser(null) }}>Logout</button>
             </div>
           </header>
           <MessageList

@@ -28,7 +28,7 @@ export function SessionSidebar({ sessions, currentSession, currentUser, onSelect
   if (collapsed) {
     return (
       <div class="session-sidebar collapsed">
-        <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="展开侧边栏">
+        <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="Expand Sidebar">
           ›
         </button>
       </div>
@@ -38,10 +38,10 @@ export function SessionSidebar({ sessions, currentSession, currentUser, onSelect
   return (
     <div class="session-sidebar">
       <div class="sidebar-header">
-        <h3>对话列表</h3>
+        <h3>Sessions</h3>
         <div class="sidebar-header-actions">
-          <button class="new-session-btn" onClick={onCreateSession} title="新建对话">+</button>
-          <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="收起侧边栏">‹</button>
+          <button class="new-session-btn" onClick={onCreateSession} title="New Session">+</button>
+          <button class="toggle-sidebar-btn" onClick={onToggleCollapse} title="Collapse Sidebar">‹</button>
         </div>
       </div>
       <div class="session-list">
@@ -78,7 +78,7 @@ export function SessionSidebar({ sessions, currentSession, currentUser, onSelect
                       e.stopPropagation()
                       startEdit(session)
                     }}
-                    title="重命名"
+                    title="Rename"
                   >✎</button>
                 )}
               </div>
