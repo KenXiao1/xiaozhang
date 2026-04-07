@@ -39,7 +39,7 @@ function Avatar({ name }) {
   return <div class="avatar">{name?.[0]?.toUpperCase() || '?'}</div>
 }
 
-export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, onReply, quotedMsg }) {
+export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, onReply, quotedMsg, threadMode }) {
   const [pending, setPending] = useState(null)
   const [menu, setMenu] = useState(null)
   const containerRef = useRef(null)
@@ -77,46 +77,70 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
   const highlights = applyHighlights(msg.content, annotations, currentUser)
   const htmlContent = renderMath(md.render(msg.content))
 
+  const bubble = (
+    <div
+      class={`msg-bubble ${msg.is_ai_generated ? 'ai-generated' : ''}`}
+      ref={containerRef}
+      onMouseUp={handleMouseUp}
+      onContextMenu={handleContextMenu}
+    >
+      {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
+      {quotedMsg && (
+        <div class="quote-preview">
+          <span class="quote-sender">{quotedMsg.sender}</span>
+          <span class="quote-text">{quotedMsg.content.slice(0, 60)}{quotedMsg.content.length > 60 ? '…' : ''}</span>
+        </div>
+      )}
+      {highlights
+        ? <div class="msg-content">{highlights}</div>
+        : <div class="msg-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      }
+    </div>
+  )
+
+  const ctxMenu = menu && (
+    <div class="ctx-menu" style={{ left: menu.x, top: menu.y }}>
+      <button onClick={handleCopy}>复制</button>
+      <button onClick={handleReply}>引用</button>
+    </div>
+  )
+
+  const annotation = pending && (
+    <Annotation
+      rect={pending.rect}
+      messageId={msg.id}
+      annotator={currentUser}
+      selection={pending}
+      onDone={() => { setPending(null); onAnnotationSaved?.() }}
+    />
+  )
+
+  if (threadMode) {
+    return (
+      <div class="msg-wrap-thread">
+        <div class="msg-thread-header">
+          <Avatar name={msg.sender} />
+          <span class="msg-sender">{msg.sender}</span>
+        </div>
+        <div class="msg-thread-body">
+          {bubble}
+        </div>
+        {annotation}
+        {ctxMenu}
+      </div>
+    )
+  }
+
   return (
     <div class={`msg-wrap ${isSelf ? 'self' : 'other'}`}>
       {!isSelf && <Avatar name={msg.sender} />}
       <div class="msg-body">
         <div class={`msg-sender ${isSelf ? 'self' : ''}`}>{msg.sender}</div>
-        <div
-          class={`msg-bubble ${msg.is_ai_generated ? 'ai-generated' : ''}`}
-          ref={containerRef}
-          onMouseUp={handleMouseUp}
-          onContextMenu={handleContextMenu}
-        >
-          {msg.is_ai_generated && <div class="ai-label">✦ AI 生成</div>}
-          {quotedMsg && (
-            <div class="quote-preview">
-              <span class="quote-sender">{quotedMsg.sender}</span>
-              <span class="quote-text">{quotedMsg.content.slice(0, 60)}{quotedMsg.content.length > 60 ? '…' : ''}</span>
-            </div>
-          )}
-          {highlights
-            ? <div class="msg-content">{highlights}</div>
-            : <div class="msg-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          }
-        </div>
+        {bubble}
       </div>
       {isSelf && <Avatar name={msg.sender} />}
-      {pending && (
-        <Annotation
-          rect={pending.rect}
-          messageId={msg.id}
-          annotator={currentUser}
-          selection={pending}
-          onDone={() => { setPending(null); onAnnotationSaved?.() }}
-        />
-      )}
-      {menu && (
-        <div class="ctx-menu" style={{ left: menu.x, top: menu.y }}>
-          <button onClick={handleCopy}>复制</button>
-          <button onClick={handleReply}>引用</button>
-        </div>
-      )}
+      {annotation}
+      {ctxMenu}
     </div>
   )
 }

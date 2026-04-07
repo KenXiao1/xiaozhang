@@ -122,6 +122,12 @@ mark.highlight-other { background: rgba(124,106,247,0.3); border-radius: 2px; cu
 }
 .dark .thread-quoted { border-color: rgba(255,255,255,0.15); }
 
+/* Gmail 风格消息布局（无左右区分） */
+.msg-wrap-thread { display: flex; flex-direction: column; gap: 0.2rem; }
+.msg-thread-header { display: flex; align-items: center; gap: 0.4rem; }
+.msg-thread-header .msg-sender { font-size: 0.82rem; font-weight: 600; opacity: 0.7; }
+.msg-thread-body .msg-bubble { border-radius: 12px; border-bottom-left-radius: 4px; }
+
 /* 注释气泡 */
 .annotation-bubble {
   background: rgba(255,253,250,0.95); backdrop-filter: blur(12px);

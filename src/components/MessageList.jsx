@@ -13,7 +13,7 @@ function ThreadNode({ msg, msgMap, currentUser, annotations, onAnnotationSaved, 
       )}
       <MessageItem msg={msg} currentUser={currentUser}
         annotations={annotations[msg.id]} onAnnotationSaved={onAnnotationSaved}
-        onReply={onReply} />
+        onReply={onReply} threadMode />
     </div>
   )
 }
