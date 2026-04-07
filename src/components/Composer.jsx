@@ -4,14 +4,15 @@ import { supabase } from '../lib/supabase.js'
 
 const md = new MarkdownIt()
 
-export function Composer({ currentUser, replyTo, onClearReply }) {
+export function Composer({ currentUser, currentSession, replyTo, onClearReply }) {
   const [text, setText] = useState('')
   const [isAI, setIsAI] = useState(false)
   const [preview, setPreview] = useState(false)
 
   async function send() {
-    if (!text.trim()) return
+    if (!text.trim() || !currentSession) return
     await supabase.from('messages').insert({
+      session_id: currentSession.id,
       sender: currentUser,
       content: text.trim(),
       is_ai_generated: isAI,
