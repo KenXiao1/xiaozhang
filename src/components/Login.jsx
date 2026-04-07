@@ -20,7 +20,7 @@ export function Login({ onLogin }) {
   return (
     <div class="login-wrap">
       <form class="login-form" onSubmit={handleSubmit}>
-        <h2>Sunlit Chat</h2>
+        <h2>Cheny & Xiao</h2>
         <input placeholder="用户名" value={username} onInput={e => setUsername(e.target.value)} />
         <input type="password" placeholder="密码" value={password} onInput={e => setPassword(e.target.value)} />
         {error && <p class="error">{error}</p>}

@@ -67,7 +67,7 @@ export function App() {
       <DappledLight />
       <div class="chat-layout">
         <header class="chat-header">
-          <span class="chat-title">Sunlit Chat</span>
+          <span class="chat-title">小张的聊天室</span>
           <div class="header-actions">
             <button class={mode === 'stream' ? 'active' : ''} onClick={() => toggleMode('stream')}>流式</button>
             <button class={mode === 'thread' ? 'active' : ''} onClick={() => toggleMode('thread')}>缩进</button>
