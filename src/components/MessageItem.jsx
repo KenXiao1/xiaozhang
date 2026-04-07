@@ -176,7 +176,6 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
   const bubble = (
     <div
       class={`msg-bubble ${msg.is_ai_generated ? 'ai-generated' : ''}`}
-      ref={containerRef}
       onMouseUp={handleMouseUp}
       onContextMenu={handleContextMenu}
       onClick={handleBubbleClick}
@@ -188,7 +187,7 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
           <span class="quote-text">{quotedMsg.content.slice(0, 60)}{quotedMsg.content.length > 60 ? '…' : ''}</span>
         </div>
       )}
-      <div class="msg-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <div class="msg-content" ref={containerRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
     </div>
   )
 
