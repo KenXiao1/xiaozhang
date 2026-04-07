@@ -20,7 +20,7 @@ body {
 }
 body.animation-ready { animation-play-state: running; animation-duration: 1s; animation-name: sunrise; }
 body.animation-ready.dark { animation-duration: 1.7s; animation-name: sunset; }
-body.dark { --light: var(--night); --dark: var(--day); --shadow: #030307; --bounce-light: #1b293f; }
+body.dark { --light: var(--night); --dark: var(--day); --shadow: #030307; --bounce-light: #2a4a6e; }
 
 @keyframes sunrise {
   0% { background-color: var(--night); }
@@ -70,7 +70,7 @@ body.dark { --light: var(--night); --dark: var(--day); --shadow: #030307; --boun
   transform: matrix3d(0.7500,-0.0625,0,0.0008,0,1,0,0,0,0,1,0,0,0,0,1);
 }
 .dark .perspective {
-  opacity: 0.3;
+  opacity: 0.55;
   transform: matrix3d(0.8333,0.0833,0,0.0003,0,1,0,0,0,0,1,0,0,0,0,1);
 }
 #leaves {
