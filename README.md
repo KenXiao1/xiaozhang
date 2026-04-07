@@ -1,5 +1,5 @@
 # Sunlit Chat
-
+![alt text](image.png)
 A private two-person chat app with sunlit-inspired visuals.
 
 Built with Preact + Vite + Supabase. Supports Markdown, math (KaTeX), text annotations, and AI-generated message labeling.
