@@ -65,6 +65,12 @@ function highlightTextInNode(root, start, end, cls, annId, note) {
   }
 }
 
+function formatTime(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
 function Avatar({ name }) {
   return <div class="avatar">{name?.[0]?.toUpperCase() || '?'}</div>
 }
@@ -235,6 +241,7 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
         <div class="msg-thread-header">
           <Avatar name={msg.sender} />
           <span class="msg-sender">{msg.sender}</span>
+          <span class="msg-time">{formatTime(msg.created_at)}</span>
         </div>
         <div class="msg-thread-body msg-with-ann">
           {bubble}
@@ -249,7 +256,10 @@ export function MessageItem({ msg, currentUser, annotations, onAnnotationSaved, 
     <div class={`msg-wrap ${isSelf ? 'self' : 'other'}`}>
       {!isSelf && <Avatar name={msg.sender} />}
       <div class="msg-body">
-        <div class={`msg-sender ${isSelf ? 'self' : ''}`}>{msg.sender}</div>
+        <div class={`msg-sender ${isSelf ? 'self' : ''}`}>
+          {msg.sender}
+          <span class="msg-time">{formatTime(msg.created_at)}</span>
+        </div>
         <div class="msg-with-ann">
           {bubble}
           {annPanel}
