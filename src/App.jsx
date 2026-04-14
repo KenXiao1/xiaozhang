@@ -7,6 +7,10 @@ import { MessageList } from './components/MessageList.jsx'
 import { Composer } from './components/Composer.jsx'
 import { SessionSidebar } from './components/SessionSidebar.jsx'
 
+function requestNotifyPermission() {
+  if (Notification.permission === 'default') Notification.requestPermission()
+}
+
 export function App() {
   const [user, setUser] = useState(() => getUser())
   const [sessions, setSessions] = useState([])
@@ -20,6 +24,7 @@ export function App() {
 
   useEffect(() => {
     if (!user) return
+    requestNotifyPermission()
     loadSessions()
   }, [user])
 
@@ -34,8 +39,12 @@ export function App() {
         payload => setSessions(prev => prev.map(s => s.id === payload.new.id ? payload.new : s)))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' },
         payload => {
-          if (payload.new.session_id === currentSession?.id) {
-            setMessages(prev => [...prev, payload.new])
+          const msg = payload.new
+          if (msg.session_id === currentSession?.id) {
+            setMessages(prev => [...prev, msg])
+          }
+          if (msg.sender !== user?.username && document.hidden && Notification.permission === 'granted') {
+            new Notification(`${msg.sender}`, { body: msg.content?.slice(0, 80) })
           }
         })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'annotations' },
