@@ -641,3 +641,7 @@ mark.highlight-other { background: rgba(124,106,247,0.3); border-radius: 2px; cu
   color: var(--dark); opacity: 0.5;
   font-size: 0.85rem;
 }
+
+
+/* 消息中的图片 */
+.msg-content img { max-width: 300px; max-height: 300px; border-radius: 8px; display: block; margin-top: 4px; cursor: pointer; }

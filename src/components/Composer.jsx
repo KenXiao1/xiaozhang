@@ -14,6 +14,21 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
   const [mentionSearchQuery, setMentionSearchQuery] = useState('')
   const [crossSessionRefs, setCrossSessionRefs] = useState([])
   const textareaRef = useRef(null)
+  const imageInputRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function uploadImage(file) {
+    setUploading(true)
+    const ext = file.name.split('.').pop()
+    const path = `${Date.now()}.${ext}`
+    const { error } = await supabase.storage.from('chat-images').upload(path, file)
+    if (!error) {
+      const { data } = supabase.storage.from('chat-images').getPublicUrl(path)
+      setText(prev => prev + `![image](${data.publicUrl})`)
+      textareaRef.current?.focus()
+    }
+    setUploading(false)
+  }
 
   async function send() {
     if (!text.trim() || !currentSession) return
@@ -172,6 +187,8 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
           title="Mark as AI-generated"
         >✦</button>
         <button class={preview ? 'active' : ''} onClick={() => setPreview(v => !v)}>Preview</button>
+        <button onClick={() => imageInputRef.current.click()} disabled={uploading} title="发送图片">🖼</button>
+        <input ref={imageInputRef} type="file" accept="image/*" style="display:none" onChange={e => { if (e.target.files[0]) uploadImage(e.target.files[0]); e.target.value = '' }} />
         <button onClick={send}>Send</button>
       </div>
     </div>
