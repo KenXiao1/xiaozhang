@@ -17,17 +17,43 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
   const imageInputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
 
+  async function compressImage(file) {
+    return new Promise(resolve => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        const MAX = 1920
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          const r = Math.min(MAX / width, MAX / height)
+          width = Math.round(width * r); height = Math.round(height * r)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width; canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        URL.revokeObjectURL(url)
+        canvas.toBlob(resolve, 'image/jpeg', 0.85)
+      }
+      img.src = url
+    })
+  }
+
   async function uploadImage(file) {
     setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('chat-images').upload(path, file)
+    const blob = await compressImage(file)
+    const path = `${Date.now()}.jpg`
+    const { error } = await supabase.storage.from('chat-images').upload(path, blob, { contentType: 'image/jpeg' })
     if (!error) {
       const { data } = supabase.storage.from('chat-images').getPublicUrl(path)
       setText(prev => prev + `![image](${data.publicUrl})`)
       textareaRef.current?.focus()
     }
     setUploading(false)
+  }
+
+  function onPaste(e) {
+    const file = [...e.clipboardData.items].find(i => i.type.startsWith('image/'))?.getAsFile()
+    if (file) { e.preventDefault(); uploadImage(file) }
   }
 
   async function send() {
@@ -176,6 +202,7 @@ export function Composer({ currentUser, currentSession, replyTo, onClearReply })
             value={text}
             onInput={onInput}
             onKeyDown={onKeyDown}
+            onPaste={onPaste}
             placeholder="Type a message... (Type @ to mention other sessions, Ctrl+Enter to send)"
             rows={3}
           />
